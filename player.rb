@@ -1,10 +1,12 @@
 class Player
 
-  attr_accessor :symbol, :name
+  attr_accessor :symbol, :name, :stats
+  
 
 	def initialize
-		puts "Welcome to tic-tac-toe!  What is your name?"
-		@name = gets.chomp
+		@stats = {wins: 0, losses: 0, ties: 0}
+		puts "Welcome to Tic-Tac-Toe! What is your name?"
+		@name = gets.chomp.capitalize
 		puts "Hello, #{@name}."
 		self.get_player_symbol
 	end

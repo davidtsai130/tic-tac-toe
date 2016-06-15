@@ -13,8 +13,8 @@ def self.won?(board)
   end
 end
 
-def self.draw?(board)
-  board.comp.include?(" ")? true : false
+def self.filled?(board)
+  board.comp.include?(" ")? false : true
 end
 
 

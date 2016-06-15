@@ -1,11 +1,7 @@
 class Game
 
-	attr_accessor :board, :move, :player, :computer
+	attr_accessor :board, :move, :player, :computer, :last_move
 	attr_reader :name 
-
-	# def initialize
-	# 	@stats = {wins: 0, losses: 0}
-	# end
 
 	def play_game(player, computer, board)
 		@board = board
@@ -16,17 +12,53 @@ class Game
 	end
 
 	def play_until
-		until Rules.won?(@board) == true
-			@move = 0
-			player_turn 
-			puts "#{player.name}'s move"
-			@board.display
-			if Rules.won?(@board) != true
-			 	computer_turn 
-			 	puts "Computer's move"
-			 	@board.display
-			end
+		loop do
+			break if Rules.won?(@board) == true || Rules.filled?(@board) == true
+				self.player_move
+		 	break if Rules.won?(@board) == true || Rules.filled?(@board) == true
+		 		self.computer_move
 		end
+		self.game_over
+	end
+
+	def player_move
+		@move = 0
+		self.player_turn 
+		puts "#{player.name}'s move"
+		@board.display
+		@last_move = player.symbol
+	end
+
+	def computer_move
+		self.computer_turn 
+		puts "Computer's move"
+		@board.display
+		@last_move = computer.computer_symbol
+	end
+
+	def game_over
+		if Rules.filled?(@board) == true && Rules.won?(@board) != true
+			self.draw?
+		elsif Rules.won?(@board) == true 
+			self.show_winner
+		end
+	end
+
+	def draw?
+		puts "It's a draw"
+			player.stats[:ties] += 1
+			puts player.stats
+	end
+		
+	def show_winner	
+		if @last_move == player.symbol
+		puts "#{player.name} is the winner"
+		player.stats[:wins] += 1
+		else
+		puts "Computer is the winner"
+		player.stats[:losses] += 1
+		end
+		puts player.stats
 	end
 
 	def player_turn
@@ -39,13 +71,16 @@ class Game
 
 	def computer_turn
 		avail_spots = @board.comp.each_with_index.map do |elem, index|
-			if elem == " "
-				index
-			end
+			index if elem == " "
 		end
 		computer_move = avail_spots.compact.sample
     @board.comp[computer_move] = computer.computer_symbol
 	end
 
+	def self.continue?
+		puts "Would you like to play again? Please enter yes or no"
+		answer = gets.chomp.upcase
+		answer == "YES"? true : false
+	end
 
 end
